@@ -17,7 +17,7 @@
 
 const connection = require('./connection')
 
-require('../../models/usersModels'); //SE TIRAR O CODIGO QUEBRA KKKKKKKKKKKKKKKK
+require('../../models/usersModels'); //SE TIRAR O ; O CODIGO QUEBRA KKKKKKKKKKKKKKKK
 
 (async () => {
     try {
