@@ -1,14 +1,20 @@
-const users = require('../mocks/userList')
+const users = require('../models/usersModels')
 const jwt = require('jsonwebtoken')
 const {jwtSecret} = require('../config/dotenvConfig')
-
-function loginAuth(req, res){
-  const {email, password} = req.body;
-  const user = users.find((user) => user.email === email && user.password === password)  
+const bcrypt = require('bcrypt')
 
 
+const loginAuth = async (req, res) => {
   try{
-    if(user){
+    const {email, password} = req.body;
+    const user = await users.findOne({
+      where: {email}
+    })  
+    
+    const userPasword = user? user.password: ''
+    const hasValid = await bcrypt.compare(password, userPasword)
+    
+    if(hasValid){
       const token = jwt.sign({id: user.id, nome : user.name}, jwtSecret, {expiresIn: '3h'});
       res.send({
         sucess : true,

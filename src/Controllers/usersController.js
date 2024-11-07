@@ -1,16 +1,21 @@
-const { where } = require('sequelize');
 const userModel = require('../models/usersModels');
+const bcrypt = require('bcrypt')
 
 const createNewUser = async (req, res, next) => {
     
-    const user = {nome, surname, email, password} = req.body;
+    const {name, surname, email, password} = req.body;
+    const saltRounds = 10 // salteamento da senha do bcrypt
+
+    //a senhaHast recebe a senha criptografada usando a libe bcrypt com o metodo hash
+    const senhaHast = await bcrypt.hash(password, saltRounds)
+
     try {
         //CRIANDO UM USUARIO
         const newUser = await userModel.create({
-            first_name:nome,
+            first_name: name,
             surname:surname,
             email:email,
-            password:password
+            password: senhaHast
         });
         //console pra mostrar o resultado do insert
         console.log(`Usuario ${newUser.first_name}, ID: ${newUser.id}`);
@@ -20,9 +25,9 @@ const createNewUser = async (req, res, next) => {
         res.status(201).send({
             message: `Usuario criado com sucesso! ID: ${newUser.id}`
         })
-    } catch (error) {
+    }catch(error) {
         res.send({
-            message : `Erro ao criar o usuário: ${error}`
+            message : `Erro ao criar o usuário aaaaaaaaaaaaaa: ${error}`
         })        
     }
 }
@@ -41,22 +46,13 @@ const getAllUsers = async (req, res, next) => {
 
 const updateUserById = async (req, res, next) => {
     const id = parseInt(req.params.id)
-    console.log(id)
+    const exists = await userModel.findByPk(id);
     try {
-        console.log(req.body.id); // Verifique o valor de req.body.id
-        const exists = await userModel.findOne({
-            where: {
-                id: id
-            }
-        });
-
         if (exists) {
-            const id = parseInt(req.params.id);
             await userModel.update(
                 { ...req.body }, 
                 { where: { id: id } }
             );
-            console.log(req.body); // Verifique os dados recebidos
             res.status(201).send({
                 message: `Usuário ${id} atualizado com sucesso`
             });
@@ -71,6 +67,23 @@ const updateUserById = async (req, res, next) => {
         });
     }
 };
+
+
+function deleteUserById (req, res) {
+    const { id } = req.params;
+    const user = userModel.findIndex();
+
+    if (animeIndex === -1) {
+        return res.status(404).send("🔴 Anime não encontrado 😰");
+    }
+
+    listaAnimes.splice (animeIndex, 1); //.splice é o método que removerá informações de dentro de um array.
+
+    res.status(200).send('🟢 Anime deletado da lista! ❌')
+}
+
+
+
 
 
 module.exports = {

@@ -1,13 +1,13 @@
 
-
-const middlewareCreateNewUser = (req, res) => {
-    const {nome, sobrenome, email, senha} = req.body;
+const middlewareCreateNewUser = (req, res, next) => {
+    const {name, surname, email, password} = req.body;
     try {
-        if(!nome || !sobrenome || !email || !senha){
+        if(!name || !surname || !email || !password){
             res.send({
-                message: `Erro ao criar o usuário: `
+                message: `Por favor preencha todos os dados `
             })
         }
+        next()
     } catch (error) {
         res.status(400).send({
             message: `Erro ao criar o usuário: ${error}`
