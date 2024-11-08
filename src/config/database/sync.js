@@ -15,9 +15,11 @@
 // })();
 
 
-const connection = require('./connection')
-
+const connection = require('./connection');
 require('../../models/usersModels'); //SE TIRAR O ; O CODIGO QUEBRA KKKKKKKKKKKKKKKK
+require('../../models/adressModel');
+require('../../models/categoryModel');
+require('../../models/productsModel');
 
 (async () => {
     try {
