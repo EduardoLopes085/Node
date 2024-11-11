@@ -69,26 +69,39 @@ const updateUserById = async (req, res, next) => {
 };
 
 
-function deleteUserById (req, res) {
-    const { id } = req.params;
-    const user = userModel.findIndex();
+const deleteUserById = async (req, res) => {
+    const id = parseInt(req.params.id);
+    
+    try {
+        const user = await userModel.findByPk(id);
 
-    if (animeIndex === -1) {
-        return res.status(404).send("🔴 Anime não encontrado 😰");
+        if (user) {
+            await userModel.destroy({
+                where: {id : id}
+            });
+
+            res.status(200).send({
+                message: `🟢 usuario de ID ${id} foi deletado com sucesso!`
+            })
+        } else {
+            res.status(400).send({
+                message: `🔴 usuário com ID: ${id} não encontrado! 😰`
+            })
+        }
+    } catch (error) {
+        res.send({
+            message: `❌ algo de errado aconteceu ao deletar o usuário. Erro: ${error}`
+        })
     }
 
-    listaAnimes.splice (animeIndex, 1); //.splice é o método que removerá informações de dentro de um array.
-
-    res.status(200).send('🟢 Anime deletado da lista! ❌')
 }
-
-
 
 
 
 module.exports = {
     createNewUser,
     getAllUsers,
-    updateUserById
+    updateUserById,
+    deleteUserById
 }
 
