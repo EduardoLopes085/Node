@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 
 const createNewUser = async (req, res, next) => {
     
-    const {name, surname, email, password} = req.body;
+    const {name, surname, email, password} = req.body;  
     const saltRounds = 10 // salteamento da senha do bcrypt
 
     //a senhaHast recebe a senha criptografada usando a libe bcrypt com o metodo hash
@@ -45,7 +45,7 @@ const getAllUsers = async (req, res, next) => {
 
 
 const updateUserById = async (req, res, next) => {
-    const id = parseInt(req.params.id)
+    const id = parseInt(req.params.id) //se botar uma letra como vai converter?
     const exists = await userModel.findByPk(id);
     try {
         if (exists) {
