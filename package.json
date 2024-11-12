@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "server": "nodemon src/server.js",
     "db": "node src/config/database/sync.js"
   },
