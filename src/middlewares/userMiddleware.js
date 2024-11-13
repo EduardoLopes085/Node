@@ -4,7 +4,7 @@ function middlewareCreateNewUser(req, res, next) {
     const { nome, sobrenome, email, senha } = req.body;
     try {
         if (!nome || !sobrenome || !email || !senha) {
-            res.status(400).send({
+           return res.status(400).send({
                 message: '❌ Os dados fornecidos estão incompletos. Por favor insira todos os dados!'
             });
         }
@@ -18,14 +18,14 @@ function middlewareCreateNewUser(req, res, next) {
 
 async function middlewareUpdateUserById(req, res, next) {
     const { nome, sobrenome, email, senha } = req.body;
-    const user = await usersModel.findByPk(id);
+    const user = await userModel.findByPk(id);
     try {
         if (!nome && !sobrenome && !email && !senha) {
             return res.status(400).send({
                 message: '❌ Nenhum dado foi fornecido para atualizar o usuário!'
             });
         }
-        if (user) {
+        if (!user) {
             res.status(400).send({
                 message: `🔴 Usuário Não encontrado! 😰`
             })
@@ -40,7 +40,7 @@ async function middlewareUpdateUserById(req, res, next) {
 
 async function middlewareDeleteUserById(req, res, next) {
     const id = parseInt(req.params.id);
-    const user = await usersModel.findByPk(id);
+    const user = await userModel.findByPk(id);
 
     try {
         if (isNaN(id) || id <= 0) {
@@ -48,7 +48,7 @@ async function middlewareDeleteUserById(req, res, next) {
                 message: '❌ O ID fornecido é inválido. Por favor, forneça um ID numérico válido!'
             });
         }
-        if (user) {
+        if (!user) {
             res.status(404).send({
                 message: `🔴 Usuário com ID: ${id} não encontrado! 😰`
             });

@@ -5,13 +5,13 @@ const usersMiddlewares = require('../middlewares/userMiddleware');
 
 //rota login
 
-router.get('/user-list',  usersControllers.getAllUsers);
-
 router.post('/user-create', usersMiddlewares.middlewareCreateNewUser, usersControllers.createNewUser);
 
-router.put('/user-update/:id', usersControllers.updateUserById);
+router.get('/user-list', usersControllers.getAllUsers);
 
+router.put('/user-update/:id', usersMiddlewares.middlewareUpdateUserById  , usersControllers.updateUserById);
 
+router.delete('user-delete/:id', usersMiddlewares.middlewareDeleteUserById, usersControllers.deleteUserById)
 
 module.exports = router
   
