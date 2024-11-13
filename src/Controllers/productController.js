@@ -1,116 +1,101 @@
-const { where } = require('sequelize');
 const productModel = require('../models/productsModel');
-const productsModel = require('../models/productsModel')
 
+// enabled name slug use_in_menu stock description price price_with_discount
+const createNewProduct = async (req, res) => {
+    const { name, slug, use_in_menu, description, price, price_with_discount } = req.body;
 
-//enabled name slug use_in_menu stock description price price_with_discount
-const createNewProduct = async (req, res) =>{
-    const {name, slug, use_in_menu, description, price, price_with_discount} = req.body; 
-    
     try {
-        const newProduct = await productsModel.create({
-            name : name,
-            slug : slug,
-            use_in_menu : use_in_menu,
+        const newProduct = await productModel.create({
+            name: name,
+            slug: slug,
+            use_in_menu: use_in_menu,
             description: description,
             price: price,
             price_with_discount: price_with_discount
-        })
+        });
 
         res.status(201).send({
-            message: `Produto criado com sucesso! ID: ${newUser.id}`
-        })
-
+            message: `Produto criado com sucesso! ID: ${newProduct.id}`
+        });
 
     } catch (error) {
         res.status(400).send({
-            message: `caiu no catch do controller Error: ${error}`
-        })
+            message: `Erro ao criar o produto: ${error.message}`
+        });
     }
+};
 
-
-
-}
-
-const getAllProduct = async (req, res) =>{
+const getAllProduct = async (req, res) => {
     try {
         const product = await productModel.findAll();
-        req.status(200).send({product})
+        res.status(200).send({ product });
 
     } catch (error) {
         res.status(404).send({
-            message: `caiu no catch do controller Error: ${error}`
-        })
+            message: `Erro ao buscar produtos: ${error.message}`
+        });
     }
-}
+};
 
-
-
-const updateProductById = async (req, res) =>{
+const updateProductById = async (req, res) => {
     try {
-       const id = parseInt(req.params.id) //olha o outro controler duvida 
-       const exist = await productModel.findByPk(id)
+        const id = parseInt(req.params.id);
+        const exist = await productModel.findByPk(id);
 
-        if(exist){
+        if (exist) {
             await productModel.update(
-                { ...req.body }, 
+                { ...req.body },
                 { where: { id: id } }
             );
             res.status(200).send({
-                message: `Produto com ${id} atualizado com sucesso`
-            })
-        }else{
+                message: `Produto com ID ${id} atualizado com sucesso`
+            });
+        } else {
             res.status(404).send({
-                message: `Não foi possível achar o produto com Id: ${id}`
-            })
+                message: `Não foi possível achar o produto com ID: ${id}`
+            });
         }
 
-
     } catch (error) {
-        res.status(404).send({
-            message: `Não foi possível achar o produto com Id: ${id}`
-        })
+        res.status(500).send({
+            message: `Erro ao atualizar o produto com ID: ${id}, ${error.message}`
+        });
     }
-}
+};
 
-
-
-const deleteProductById = async (req, res) =>{
+const deleteProductById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id)
-        const produc = productModel.findByPk(id)
+        const id = parseInt(req.params.id);
+        const produc = await productModel.findByPk(id);
 
-        if(produc){
+        if (produc) {
             await productModel.destroy({
-                where: {id : id}
-            })
+                where: { id: id }
+            });
 
             res.status(200).send({
-                message: `produto de ID ${id} foi deletado com sucesso!`
-            })
+                message: `Produto de ID ${id} foi deletado com sucesso!`
+            });
 
-        }else{
+        } else {
             res.status(404).send({
-                message: `Não foi possível achar o produto com Id: ${id}`
-            })
+                message: `Não foi possível achar o produto com ID: ${id}`
+            });
         }
 
-
     } catch (error) {
-        res.status(404).send({
-            message: `Não foi possível achar o produto com Id: ${id}`
-        })
+        res.status(500).send({
+            message: `Erro ao deletar o produto com ID: ${id}, ${error.message}`
+        });
     }
-}
-
-
+};
 
 module.exports = {
     createNewProduct,
     getAllProduct,
     updateProductById,
     deleteProductById
-}
+};
 
 
 

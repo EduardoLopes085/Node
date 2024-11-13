@@ -1,63 +1,55 @@
 const userModel = require('../models/usersModels');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
-const createNewUser = async (req, res, next) => {
-    
-    const {name, surname, email, password} = req.body;  
-    const saltRounds = 10 // salteamento da senha do bcrypt
-
-    //a senhaHast recebe a senha criptografada usando a libe bcrypt com o metodo hash
-    const senhaHast = await bcrypt.hash(password, saltRounds)
+const createNewUser = async (req, res) => {
+    const { name, surname, email, password } = req.body;
+    const saltRounds = 10;
 
     try {
-        //CRIANDO UM USUARIO
+        const senhaHash = await bcrypt.hash(password, saltRounds);
+        
         const newUser = await userModel.create({
             first_name: name,
-            surname:surname,
-            email:email,
-            password: senhaHast
+            surname: surname,
+            email: email,
+            password: senhaHash
         });
-        //console pra mostrar o resultado do insert
+
         console.log(`Usuario ${newUser.first_name}, ID: ${newUser.id}`);
         
-        //resposta da requisição
-
         res.status(201).send({
             message: `Usuario criado com sucesso! ID: ${newUser.id}`
-        })
-    }catch(error) {
-        res.send({
-            message : `Erro ao criar o usuário aaaaaaaaaaaaaa: ${error}`
-        })        
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: `Erro ao criar o usuário: ${error.message}`
+        });
     }
-}
+};
 
-const getAllUsers = async (req, res, next) => {
+const getAllUsers = async (req, res) => {
     try {
         const users = await userModel.findAll();
-        res.send(users)
+        res.status(200).send(users);
     } catch (error) {
-        res.send({
-            message : 'Erro ao listar usuarios'
-        })
+        res.status(500).send({
+            message: 'Erro ao listar usuários: ' + error.message
+        });
     }
-}
+};
 
+const updateUserById = async (req, res) => {
+    const id = parseInt(req.params.id);
 
-const updateUserById = async (req, res, next) => {
-    const id = parseInt(req.params.id) //se botar uma letra como vai converter?
-    const exists = await userModel.findByPk(id);
     try {
+        const exists = await userModel.findByPk(id);
         if (exists) {
-            await userModel.update(
-                { ...req.body }, 
-                { where: { id: id } }
-            );
-            res.status(201).send({
+            await userModel.update({ ...req.body }, { where: { id: id } });
+            res.status(200).send({
                 message: `Usuário ${id} atualizado com sucesso`
             });
         } else {
-            res.status(400).send({
+            res.status(404).send({
                 message: `Usuário não encontrado`
             });
         }
@@ -68,40 +60,31 @@ const updateUserById = async (req, res, next) => {
     }
 };
 
-
 const deleteUserById = async (req, res) => {
     const id = parseInt(req.params.id);
-    
+
     try {
         const user = await userModel.findByPk(id);
-
         if (user) {
-            await userModel.destroy({
-                where: {id : id}
-            });
-
+            await userModel.destroy({ where: { id: id } });
             res.status(200).send({
-                message: `🟢 usuario de ID ${id} foi deletado com sucesso!`
-            })
+                message: `🟢 Usuário de ID ${id} foi deletado com sucesso!`
+            });
         } else {
-            res.status(400).send({
-                message: `🔴 usuário com ID: ${id} não encontrado! 😰`
-            })
+            res.status(404).send({
+                message: `🔴 Usuário com ID: ${id} não encontrado! 😰`
+            });
         }
     } catch (error) {
-        res.send({
-            message: `❌ algo de errado aconteceu ao deletar o usuário. Erro: ${error}`
-        })
+        res.status(500).send({
+            message: `❌ Algo de errado aconteceu ao deletar o usuário. Erro: ${error.message}`
+        });
     }
-
-}
-
-
+};
 
 module.exports = {
     createNewUser,
     getAllUsers,
     updateUserById,
     deleteUserById
-}
-
+};
