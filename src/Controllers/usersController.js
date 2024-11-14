@@ -27,16 +27,38 @@ const createNewUser = async (req, res) => {
     }
 };
 
+// const getAllUsers = async (req, res) => {
+//     try {
+//         const users = await userModel.findAll();
+//         res.status(200).send(users);
+//     } catch (error) {
+//         res.status(500).send({
+//             message: 'Erro ao listar usuários: ' + error.message
+//         });
+//     }
+// };
+
 const getAllUsers = async (req, res) => {
     try {
-        const users = await userModel.findAll();
-        res.status(200).send(users);
-    } catch (error) {
-        res.status(500).send({
-            message: 'Erro ao listar usuários: ' + error.message
+        // Pegando o valor do parâmetro limit da query string
+        const limit = parseInt(req.query.limit);  // Padrão de 5 usuários caso o parâmetro não seja fornecido
+        
+        // Buscando os usuários com o limite
+        const users = await userModel.findAll({
+            limit: limit // Aplicando o limite na consulta ao banco
         });
-    }
+
+        res.send(users);
+        
+    } catch (error) {
+        res.send({
+            message: `❌ Erro ao listar os usuários! Erro: ${error}`
+        });
+    };
 };
+
+
+
 
 const updateUserById = async (req, res) => {
     const id = parseInt(req.params.id);
