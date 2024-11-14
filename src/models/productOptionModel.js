@@ -18,7 +18,7 @@ let productOptionModel = connection.define('productOptions',{
     },
     shape:{
         type: DataTypes.ENUM('square', 'circle'),
-        defaultValue: 'text',
+        defaultValue: 'square',
         allowNull: true
     },
     radius:{

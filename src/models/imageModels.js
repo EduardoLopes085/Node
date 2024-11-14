@@ -14,7 +14,7 @@ let imageModel = connection.define('images',{
     },
     enabled:{
         type: DataTypes.BOOLEAN,
-        defaultValue: 0,
+        defaultValue: false,
         allowNull: true
     },
     path:{

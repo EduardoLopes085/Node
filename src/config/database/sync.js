@@ -18,8 +18,11 @@
 const connection = require('./connection');
 require('../../models/usersModels'); //SE TIRAR O ; O CODIGO QUEBRA KKKKKKKKKKKKKKKK
 require('../../models/adressModel');
-require('../../models/categoryModel');
 require('../../models/productsModel');
+require('../../models/categoryModel');
+require('../../models/imageModels');
+require('../../models/productsCategory');
+require('../../models/productOptionModel');
 
 (async () => {
     try {
