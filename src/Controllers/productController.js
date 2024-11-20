@@ -25,17 +25,40 @@ const createNewProduct = async (req, res) => {
     }
 };
 
+// const getAllProduct = async (req, res) => {
+//     try {
+//         const product = await productModel.findAll();
+//         res.status(200).send({ product });
+
+//     } catch (error) {
+//         res.status(404).send({
+//             message: `Erro ao buscar produtos: ${error.message}`
+//         });
+//     }
+// };
+
 const getAllProduct = async (req, res) => {
     try {
-        const product = await productModel.findAll();
-        res.status(200).send({ product });
+        // Obtém o parâmetro "limit" da query string, ou define o valor padrão como 12
+        const limit = parseInt(req.query.limit) || 12;
 
+        // Se o valor de "limit" for -1, busca todos os produtos
+        const options = limit === -1 ? {} : { limit };
+
+        // Busca os produtos com base na opção definida
+        const products = await productModel.findAll(options);
+
+        res.status(200).send({ products });
     } catch (error) {
         res.status(404).send({
             message: `Erro ao buscar produtos: ${error.message}`
         });
     }
 };
+
+
+
+
 
 const updateProductById = async (req, res) => {
     try {
