@@ -1,6 +1,6 @@
 const userModel = require('../models/usersModels')
 
-function middlewareCreateNewUser(req, res, next) {
+async function middlewareCreateNewUser(req, res, next) {
     const { nome, sobrenome, email, senha } = req.body;
     try {
         if (!nome || !sobrenome || !email || !senha) {
@@ -8,7 +8,40 @@ function middlewareCreateNewUser(req, res, next) {
                 message: '❌ Os dados fornecidos estão incompletos. Por favor insira todos os dados!'
             });
         }
-        next(); // Executa a próxima função;
+
+        const senhaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+        if (!senhaRegex.test(senha)) {
+                      
+            return res.status(400).send({
+                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula e um caractere especial!'
+            });
+        }
+
+        const nomeRegex = /[^\w\s]/;
+        if (!nomeRegex.test(nome) || !nomeRegex.test(sobrenome)) {
+                      
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@(hotmail|yahoo|gmail|outlook)\.com$/;
+        if (!emailRegex.test(email)) {
+                      
+            return res.status(400).send({
+                message: '❌ E-mail inválido!'
+            });
+        }
+
+        const allredyExist = await Usuario.findOne({ where: { email } });
+        if (allredyExist) {
+            return res.status(400).send({
+                message: '❌ E-mail inserido já cadastrado!'
+            });
+        }
+
+
+        next(); 
     } catch (error) {
         res.status(400).send({
             message: `🔴 Algo de errado aconteceu ao tentar criar o usuário. Erro: ${error}`
@@ -30,6 +63,31 @@ async function middlewareUpdateUserById(req, res, next) {
                 message: `🔴 Usuário Não encontrado! 😰`
             })
         }
+        
+        const senhaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+        if (!senhaRegex.test(senha)) {
+                      
+            return res.status(400).send({
+                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula e um caractere especial!'
+            });
+        }
+
+        const nomeRegex = /[^\w\s]/;
+        if (!nomeRegex.test(nome) || !nomeRegex.test(sobrenome)) {
+                      
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@(hotmail|yahoo|gmail|outlook)\.com$/;
+        if (!emailRegex.test(email)) {
+                      
+            return res.status(400).send({
+                message: '❌ E-mail inválido!'
+            });
+        }      
+        
         next();
     } catch (error) {
         res.status(400).send({

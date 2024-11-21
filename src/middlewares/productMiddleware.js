@@ -10,6 +10,13 @@ function middlewareCreateProduct(req, res, next){
             });
         }
 
+        const nameRegex = /[^\w\s]/;
+        if (nameRegex.test(name) || nameRegex.test(description) || nameRegex.test(price) || nameRegex.test(price_with_discount)  ) {
+                      
+            return res.status(400).send({
+                message: `❌ Um ou mais valores inseridos são inválidos.!`
+            });
+        }
         next();
     } catch (error) {
         res.status(500).send({

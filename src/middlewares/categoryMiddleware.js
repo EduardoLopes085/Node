@@ -8,6 +8,16 @@ function middlewareCreateNewCategory(req, res, next){
                 message: `❌ Os dados fornecidos estão incompletos. Por favor insira todos os dados! \n Middleware`
             });
         }
+        
+        const nameRegex = /[^\w\s]/;
+        if (!nameRegex.test(name)) {
+                      
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
+            });
+        }
+
+            
         next()
     } catch (error) {
         res.status(500).send({
@@ -31,6 +41,16 @@ async function middlewareUpdateCategoryById(req, res, next){
                 message: `🔴 Categoria não encontrado! \n Middleware`
             })
         }
+    
+        const nameRegex = /[^\w\s]/;
+        if (!nameRegex.test(name)) {
+                      
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
+            });
+        }
+               
+        
         next() 
 
 
