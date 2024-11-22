@@ -86,7 +86,7 @@ const getProductById = async (req, res) => {
 
 const updateProductById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = parseInt(req.params.id); // Certifique-se de acessar o id corretamente
         const exist = await productModel.findByPk(id);
 
         if (exist) {
@@ -102,7 +102,6 @@ const updateProductById = async (req, res) => {
                 message: `Não foi possível achar o produto com ID: ${id}`
             });
         }
-
     } catch (error) {
         res.status(500).send({
             message: `Erro ao atualizar o produto com ID: ${id}, ${error.message}`

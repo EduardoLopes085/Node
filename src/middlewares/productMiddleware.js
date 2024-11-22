@@ -37,26 +37,29 @@ function middlewareCreateProduct(req, res, next) {
 
 async function middlewareUpdateProduct(req, res, next) {
     const { name, slug, use_in_menu, description, price, price_with_discount } = req.body;
-    const product = await productModel.findByPk(id)
+    const id = parseInt(req.params.id); // Corrigido para acessar o id da requisição
 
     try {
-        if (!name & !slug & !use_in_menu & !description & !price & !price_with_discount) {
+        const product = await productModel.findByPk(id);
+
+        if (!name && !slug && !use_in_menu && !description && !price && !price_with_discount) {
             return res.status(400).send({
                 message: `🔴 Nenhum dado foi fornecido para a atualização do produto. \n Middleware`
-            })
+            });
         }
+        
         if (!product) {
             return res.status(404).send({
                 message: `🔴 Produto não encontrado! \n Middleware`
-            })
+            });
         }
-        next()
+
+        next();
     } catch (error) {
         res.status(400).send({
             message: `🔴 Erro inesperado ao tentar atualizar produto. Erro: ${error} \n Middleware`
         });
     }
-
 }
 
 
