@@ -1,93 +1,79 @@
-const userModel = require('../models/usersModels')
+const userModel = require('../models/usersModels');
 
 async function middlewareCreateNewUser(req, res, next) {
-    const { nome, sobrenome, email, senha } = req.body;
+    const { first_name, surname, email, password } = req.body;
     try {
-        if (!nome || !sobrenome || !email || !senha) {
-           return res.status(400).send({
-                message: '❌ Os dados fornecidos estão incompletos. Por favor insira todos os dados!'
+        if (!first_name || !surname || !email || !password) {
+            return res.status(400).send({
+                message: '❌ Os dados fornecidos estão incompletos. Por favor insira todos os dados! \n Middleware'
+            });
+        }
+
+        const nomeRegex = /^[a-zA-ZÀ-ÿ]+(?: [a-zA-ZÀ-ÿ]+)*$/;
+
+        if (!nomeRegex.test(first_name) || !nomeRegex.test(surname)) {
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos! Apenas letras são permitidas.'
             });
         }
 
         const senhaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
-        if (!senhaRegex.test(senha)) {
-                      
+        if (!senhaRegex.test(password)) {
             return res.status(400).send({
-                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula e um caractere especial!'
+                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula, um caractere especial, e não pode ser composta apenas por espaços ou aspas! \n Middleware'
             });
         }
 
-        const nomeRegex = /[^\w\s]/;
-        if (!nomeRegex.test(nome) || !nomeRegex.test(sobrenome)) {
-                      
-            return res.status(400).send({
-                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
-            });
-        }
-
-        const emailRegex = /^[^\s@]+@(hotmail|yahoo|gmail|outlook)\.com$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-                      
             return res.status(400).send({
-                message: '❌ E-mail inválido!'
+                message: '❌ E-mail inválido! \n Middleware'
             });
         }
 
-        const allredyExist = await Usuario.findOne({ where: { email } });
-        if (allredyExist) {
-            return res.status(400).send({
-                message: '❌ E-mail inserido já cadastrado!'
-            });
-        }
-
-
-        next(); 
+        next();
     } catch (error) {
-        res.status(400).send({
-            message: `🔴 Algo de errado aconteceu ao tentar criar o usuário. Erro: ${error}`
+        res.status(500).send({
+            message: `🔴 Algo de errado aconteceu ao tentar criar o usuário. Erro: ${error.message}`
         });
-    };
+    }
 };
 
 async function middlewareUpdateUserById(req, res, next) {
-    const { nome, sobrenome, email, senha } = req.body;
-    const user = await userModel.findByPk(id);
+    const { first_name, surname, email, password } = req.body;
+    const user = await userModel.findByPk(req.params.id);
     try {
-        if (!nome && !sobrenome && !email && !senha) {
+        if (!first_name && !surname && !email && !password) {
             return res.status(400).send({
-                message: '❌ Nenhum dado foi fornecido para atualizar o usuário!'
+                message: '❌ Nenhum dado foi fornecido para atualizar o usuário! \n Middleware'
             });
         }
         if (!user) {
-            res.status(400).send({
-                message: `🔴 Usuário Não encontrado! 😰`
-            })
-        }
-        
-        const senhaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
-        if (!senhaRegex.test(senha)) {
-                      
             return res.status(400).send({
-                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula e um caractere especial!'
+                message: `🔴 Usuário Não encontrado! 😰 \n Middleware`
             });
         }
 
-        const nomeRegex = /[^\w\s]/;
-        if (!nomeRegex.test(nome) || !nomeRegex.test(sobrenome)) {
-                      
+        if (password && !/^(?!.*[\s'"`]).{8,}(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).*$/.test(password)) {
             return res.status(400).send({
-                message: '❌ O nome ou sobrenome possui caracteres inválidos!'
+                message: '❌ A senha deve possuir pelo menos um número, uma letra maiúscula, um caractere especial, e não pode ser composta apenas por espaços ou aspas! \n Middleware'
             });
         }
 
-        const emailRegex = /^[^\s@]+@(hotmail|yahoo|gmail|outlook)\.com$/;
-        if (!emailRegex.test(email)) {
-                      
+        const nomeRegex = /^[a-zA-ZÀ-ÿ]+$/;
+        if ((first_name && !nomeRegex.test(first_name)) || (surname && !nomeRegex.test(surname))) {
+            return res.status(400).send({
+                message: '❌ O nome ou sobrenome possui caracteres inválidos! \n Middleware'
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email && !emailRegex.test(email)) {
             return res.status(400).send({
                 message: '❌ E-mail inválido!'
             });
-        }      
-        
+        }
+
         next();
     } catch (error) {
         res.status(400).send({
@@ -107,7 +93,7 @@ async function middlewareDeleteUserById(req, res, next) {
             });
         }
         if (!user) {
-            res.status(404).send({
+            return res.status(404).send({
                 message: `🔴 Usuário com ID: ${id} não encontrado! 😰`
             });
         }
@@ -116,17 +102,11 @@ async function middlewareDeleteUserById(req, res, next) {
         res.status(400).send({
             message: `🔴 Algo de errado aconteceu ao deletar o usuário. Erro: ${error}`
         });
-    };
+    }
 };
-
-
 
 module.exports = {
     middlewareCreateNewUser,
     middlewareUpdateUserById,
     middlewareDeleteUserById
-}
-
-
-
-
+};

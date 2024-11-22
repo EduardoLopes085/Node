@@ -56,7 +56,31 @@ const getAllProduct = async (req, res) => {
     }
 };
 
+const getProductById = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).send({
+                message: '❌ O ID fornecido é inválido. Por favor, forneça um ID numérico válido!'
+            });
+        }
 
+        const product = await productModel.findByPk(id);
+
+        if (product) {
+            res.status(200).send(product);
+        } else {
+            res.status(404).send({
+                message: `🔴 Produto com ID: ${id} não encontrado!`
+            });
+        }
+    } catch (error) {
+        res.status(500).send({
+            message: `🔴 Erro inesperado ao tentar buscar produto. Erro: ${error.message}`
+        });
+    }
+};
 
 
 
@@ -117,7 +141,8 @@ module.exports = {
     createNewProduct,
     getAllProduct,
     updateProductById,
-    deleteProductById
+    deleteProductById,
+    getProductById
 };
 
 

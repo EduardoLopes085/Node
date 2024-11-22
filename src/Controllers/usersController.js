@@ -2,25 +2,38 @@ const userModel = require('../models/usersModels');
 const bcrypt = require('bcrypt');
 
 const createNewUser = async (req, res) => {
-    const { name, surname, email, password } = req.body;
+    const { first_name, surname, email, password } = req.body;
     const saltRounds = 10;
 
     try {
+        // Verifica se o e-mail já existe
+        const existingUser = await userModel.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).send({
+                message: '❌ E-mail já está cadastrado.'
+            });
+        }
+
+        // Gera o hash da senha com o bcrypt
         const senhaHash = await bcrypt.hash(password, saltRounds);
-        
+
+        // Cria um novo usuário no banco de dados
         const newUser = await userModel.create({
-            first_name: name,
+            first_name: first_name,
             surname: surname,
             email: email,
             password: senhaHash
         });
 
+        // Log para debug
         console.log(`Usuario ${newUser.first_name}, ID: ${newUser.id}`);
-        
+
+        // Envia uma resposta de sucesso
         res.status(201).send({
-            message: `Usuario criado com sucesso! ID: ${newUser.id}`
+            message: `Usuário criado com sucesso! ID: ${newUser.id}`
         });
     } catch (error) {
+        // Trata erros e envia uma resposta de erro
         res.status(500).send({
             message: `Erro ao criar o usuário: ${error.message}`
         });
