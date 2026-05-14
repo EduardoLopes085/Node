@@ -1,3 +1,4 @@
+//Exemplo de arquivos mockados, seus dados devem ser ignorados bem como o arquivo
 const animes = [
     {
         id: 1,
